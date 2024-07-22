@@ -15,6 +15,7 @@ from .utils import data
 from . import nn
 from . import amp
 
+from .core.internal import * # serious change
 
 def _prepare_to_exit():
     _GCUC._prepare_to_exit()
