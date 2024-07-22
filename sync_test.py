@@ -12,6 +12,7 @@ run(x1)
 run(x2)
 torch_gcu.synchronize()
 
+print('******************Test result******************')
 with d2l.Benchmark('GCU0 time'):
     run(x1)
     torch_gcu.synchronize('xla:0')
