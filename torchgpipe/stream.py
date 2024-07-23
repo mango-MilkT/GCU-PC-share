@@ -6,6 +6,8 @@ from typing import Generator, List, Union, cast
 
 import torch
 
+import torch_gcu
+
 __all__: List[str] = []
 
 
@@ -44,8 +46,11 @@ def default_stream(device: torch.device) -> AbstractStream:
 @contextmanager
 def use_device(device: torch.device) -> Generator[None, None, None]:
     """:func:`torch.cuda.device` for either CPU or CUDA device."""
+    if device.type == 'xla':
+        with torch_gcu.device(device):
+            yield # serious change
+
     if device.type != 'cuda':
-        breakpoint()
         yield
         return
 

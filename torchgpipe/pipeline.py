@@ -111,7 +111,9 @@ class Pipeline:
 
         with spawn_workers(devices) as (in_queues, out_queues):
             for schedule in clock_cycles(m, n):
+                breakpoint() # bp change
                 self.fence(schedule, skip_trackers)
+                breakpoint() # bp change
                 self.compute(schedule, skip_trackers, in_queues, out_queues)
 
     def fence(self,
