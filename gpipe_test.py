@@ -16,7 +16,7 @@ model.to(device=device)
 
 # model = torchgpipe.GPipe(model, balance=[2, 2], chunks=8)
 
-batch_size, lr, num_epochs = 256, 0.1, 10
+batch_size, lr, num_epochs = 256, 0.1, 5
 loss = nn.CrossEntropyLoss(reduction='none')
 trainer = torch.optim.SGD(model.parameters(), lr=lr)
 
@@ -67,8 +67,11 @@ for epoch in range(num_epochs):
     test_acc = metric[0] / metric[1]
 
     animator.add(epoch+1, train_metrics + (test_acc,))
+    input(f"epoch {epoch} finished!")
 
 train_loss, train_acc = train_metrics
+print(train_loss)
+print(train_acc)
 
 assert train_loss < 0.5, train_loss
 assert train_acc <= 1 and train_acc > 0.7, train_acc
