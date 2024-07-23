@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from d2l import torch as d2l
 import torch_gcu
-from torchgpipe import GPipe
+from .gpipe_gcu import GPipe
 
 model = nn.Sequential(nn.Flatten(), nn.Linear(784,256), nn.ReLU(), nn.Linear(256,10))
 def init_weights(m):
