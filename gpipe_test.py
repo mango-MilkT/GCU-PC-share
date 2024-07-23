@@ -11,10 +11,10 @@ def init_weights(m):
 
 model.apply(init_weights)
 
-model = torchgpipe.GPipe(model, balance=[2, 2], chunks=8)
+device = torch_gcu.gcu_device()
+model.to(device=device)
 
-# 1st partition: nn.Sequential(a, b) on cuda:0
-# 2nd partition: nn.Sequential(c, d) on cuda:1
+# model = torchgpipe.GPipe(model, balance=[2, 2], chunks=8)
 
 batch_size, lr, num_epochs = 256, 0.1, 10
 loss = nn.CrossEntropyLoss(reduction='none')
@@ -23,9 +23,9 @@ trainer = torch.optim.SGD(model.parameters(), lr=lr)
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
 input("data loaded!")
 
-in_device = model.devices[0]
-out_device = model.devices[-1]
-input("in & out device set!")
+# in_device = model.devices[0]
+# out_device = model.devices[-1]
+# input("in & out device set!")
 
 animator = d2l.Animator(xlabel='epoch', xlim=[1,num_epochs], ylim=[0.3,0.9], legend=['train loss', 'train acc', 'test acc'])
 for epoch in range(num_epochs):
@@ -34,8 +34,10 @@ for epoch in range(num_epochs):
         input("train mode on!")
     metric = d2l.Accumulator(3)
     for X, y in train_iter:
-        X = X.to(in_device, non_blocking=True)
-        y = y.to(out_device, non_blocking=True)
+        X = X.to(device)
+        y = y.to(device)
+        # X = X.to(in_device, non_blocking=True)
+        # y = y.to(out_device, non_blocking=True)
         input("to device complete!")
         y_hat = model(X)
         input("forward compute complete!")
@@ -56,8 +58,10 @@ for epoch in range(num_epochs):
     metric = d2l.Accumulator(2)
     with torch.no_grad():
         for X, y in test_iter:
-            X = X.to(in_device, non_blocking=True)
-            y = y.to(out_device, non_blocking=True)
+            X = X.to(device)
+            y = y.to(device)
+            # X = X.to(in_device, non_blocking=True)
+            # y = y.to(out_device, non_blocking=True)
             y_hat = model(X)
             metric.add(d2l.accuracy(y_hat, y), y.numel())
     test_acc = metric[0] / metric[1]
