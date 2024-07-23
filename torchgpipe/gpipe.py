@@ -382,6 +382,7 @@ class GPipe(Module):
                             copy_streams,
                             self._skip_layout,
                             checkpoint_stop)
+        breakpoint() # bp change
         pipeline.run()
 
         # Merge the micro-batches into one mini-batch.

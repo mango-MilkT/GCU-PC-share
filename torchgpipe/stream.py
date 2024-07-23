@@ -45,6 +45,7 @@ def default_stream(device: torch.device) -> AbstractStream:
 def use_device(device: torch.device) -> Generator[None, None, None]:
     """:func:`torch.cuda.device` for either CPU or CUDA device."""
     if device.type != 'cuda':
+        breakpoint()
         yield
         return
 

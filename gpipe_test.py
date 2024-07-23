@@ -42,7 +42,7 @@ for epoch in range(num_epochs):
         # y = y.to(device)
         X = X.to(in_device, non_blocking=True)
         y = y.to(out_device, non_blocking=True)
-        input("to device complete!")
+        # input("to device complete!")
         y_hat = model(X)
         input("forward compute complete!")
         l = loss(y_hat, y)

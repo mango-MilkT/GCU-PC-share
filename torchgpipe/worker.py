@@ -107,6 +107,9 @@ def spawn_workers(devices: List[torch.device],
 
         if device.type == 'cpu' and device.index is not None:
             return torch.device('cpu')
+        
+        if device.type == 'xla' and device.index is None:
+            breakpoint() # serious change
 
         return device
 
