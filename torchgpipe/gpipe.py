@@ -249,10 +249,11 @@ class GPipe(Module):
         devices = [torch.device('xla:{}'.format(d)) for d in devices] # serious change
         # devices = [torch.device(d) for d in devices]
         devices = cast(List[torch.device], devices)
-        print(devices)
+        print(devices) # print change
 
         try:
             self.partitions, self.balance, self.devices = split_module(module, balance, devices)
+            print("self.partitions, self.balance, self.devices", self.partitions, self.balance, self.devices) # print change
         except BalanceError as exc:
             raise ValueError(recommend_auto_balance(str(exc)))
 
@@ -359,9 +360,11 @@ class GPipe(Module):
         batches = microbatch.scatter(input, self.chunks)
 
         # Separate CUDA streams for copy.
+        input("# Separate CUDA streams for copy.") # input change
         copy_streams = self._ensure_copy_streams()
 
         # The micro-batch index where the checkpointing stops.
+        input("# The micro-batch index where the checkpointing stops.") # input change
         if self.training:
             checkpoint_stop = {
                 'always': self.chunks,
@@ -372,6 +375,7 @@ class GPipe(Module):
             checkpoint_stop = 0
 
         # Run pipeline parallelism.
+        input("# Run pipeline parallelism.") # input change
         pipeline = Pipeline(batches,
                             self.partitions,
                             self.devices,
@@ -381,5 +385,6 @@ class GPipe(Module):
         pipeline.run()
 
         # Merge the micro-batches into one mini-batch.
+        input("# Merge the micro-batches into one mini-batch.") # input change
         output = microbatch.gather(batches)
         return output
