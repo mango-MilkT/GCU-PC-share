@@ -49,9 +49,9 @@ for epoch in range(num_epochs):
         if isinstance(trainer, torch.optim.Optimizer):
             trainer.zero_grad()
             # input("zero grad complete!")
-            l.mean().backward()
+            l.backward()
             # input("backward compute complete!")
-            trainer.step()
+            torch_gcu.optimizer_step(trainer, [l, y_hat], model=model)
             # input("optim step complete!")
         metric.add(float(l.sum()), d2l.accuracy(y_hat, y), y.numel())
         input(f"batch {batch_index} finished!")
