@@ -54,7 +54,7 @@ for epoch in range(num_epochs):
             torch_gcu.optimizer_step(trainer, [l, y_hat], model=model)
             # input("optim step complete!")
         metric.add(float(l.sum()), d2l.accuracy(y_hat, y), y.numel())
-        input(f"batch {batch_index} finished!")
+        # input(f"batch {batch_index} finished!")
         batch_index += 1
     train_metrics = metric[0] / metric[2], metric[1] / metric[2]
     
@@ -73,7 +73,7 @@ for epoch in range(num_epochs):
     test_acc = metric[0] / metric[1]
 
     animator.add(epoch+1, train_metrics + (test_acc,))
-    input(f"epoch {epoch} finished!")
+    # input(f"epoch {epoch} finished!")
 
 train_loss, train_acc = train_metrics
 print(train_loss)
