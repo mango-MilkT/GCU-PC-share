@@ -244,9 +244,11 @@ class GPipe(Module):
             module = DeferredBatchNorm.convert_deferred_batch_norm(module, chunks)
 
         if devices is None:
-            devices = range(torch_gcu.device_count())
-        devices = [torch.device(d) for d in devices]
-        devices = cast(List[torch.device], devices)
+            devices = range(torch_gcu.device_count()) # serious change
+            # devices = range(torch.cuda.device_count())
+        devices = [torch_gcu.device(d) for d in devices] # serious change
+        # devices = [torch.device(d) for d in devices]
+        devices = cast(List[torch_gcu.device], devices)
         print(devices)
 
         try:
