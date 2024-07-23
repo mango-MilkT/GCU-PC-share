@@ -21,7 +21,7 @@ loss = nn.CrossEntropyLoss(reduction='none')
 trainer = torch.optim.SGD(model.parameters(), lr=lr)
 
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
-input("data loaded!")
+# input("data loaded!")
 
 # in_device = model.devices[0]
 # out_device = model.devices[-1]
@@ -31,30 +31,30 @@ animator = d2l.Animator(xlabel='epoch', xlim=[1,num_epochs], ylim=[0.3,0.9], leg
 for epoch in range(num_epochs):
     if isinstance(model, torch.nn.Module):
         model.train()
-        input("train mode on!")
+        # input("train mode on!")
     metric = d2l.Accumulator(3)
     for X, y in train_iter:
         X = X.to(device)
         y = y.to(device)
         # X = X.to(in_device, non_blocking=True)
         # y = y.to(out_device, non_blocking=True)
-        input("to device complete!")
+        # input("to device complete!")
         y_hat = model(X)
-        input("forward compute complete!")
+        # input("forward compute complete!")
         l = loss(y_hat, y)
         if isinstance(trainer, torch.optim.Optimizer):
             trainer.zero_grad()
-            input("zero grad complete!")
+            # input("zero grad complete!")
             l.mean().backward()
-            input("backward compute complete!")
+            # input("backward compute complete!")
             trainer.step()
-            input("optim step complete!")
+            # input("optim step complete!")
         metric.add(float(l.sum()), d2l.accuracy(y_hat, y), y.numel())
     train_metrics = metric[0] / metric[2], metric[1] / metric[2]
     
     if isinstance(model, nn.Module):
         model.eval()  # Set the model to evaluation mode
-        input("eval mode on!")
+        # input("eval mode on!")
     metric = d2l.Accumulator(2)
     with torch.no_grad():
         for X, y in test_iter:
