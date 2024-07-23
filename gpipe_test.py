@@ -28,6 +28,9 @@ train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
 # input("in & out device set!")
 
 animator = d2l.Animator(xlabel='epoch', xlim=[1,num_epochs], ylim=[0.3,0.9], legend=['train loss', 'train acc', 'test acc'])
+
+firstBatchFlag = 1
+
 for epoch in range(num_epochs):
     if isinstance(model, torch.nn.Module):
         model.train()
@@ -50,6 +53,9 @@ for epoch in range(num_epochs):
             trainer.step()
             # input("optim step complete!")
         metric.add(float(l.sum()), d2l.accuracy(y_hat, y), y.numel())
+        if firstBatchFlag:
+            input("first batch complete!")
+            firstBatchFlag = 0
     train_metrics = metric[0] / metric[2], metric[1] / metric[2]
     
     if isinstance(model, nn.Module):
@@ -67,7 +73,8 @@ for epoch in range(num_epochs):
     test_acc = metric[0] / metric[1]
 
     animator.add(epoch+1, train_metrics + (test_acc,))
-    input(f"epoch {epoch} finished!")
+    if epoch == 0:
+        input(f"first epoch finished!")
 
 train_loss, train_acc = train_metrics
 print(train_loss)
