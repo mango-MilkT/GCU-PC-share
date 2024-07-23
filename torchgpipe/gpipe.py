@@ -246,9 +246,9 @@ class GPipe(Module):
         if devices is None:
             devices = range(torch_gcu.device_count()) # serious change
             # devices = range(torch.cuda.device_count())
-        devices = [torch_gcu.device(d) for d in devices] # serious change
+        devices = [torch.device('xla:{}'.format(d)) for d in devices] # serious change
         # devices = [torch.device(d) for d in devices]
-        devices = cast(List[torch_gcu.device], devices)
+        devices = cast(List[torch.device], devices)
         print(devices)
 
         try:
