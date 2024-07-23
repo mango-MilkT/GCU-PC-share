@@ -247,6 +247,7 @@ class GPipe(Module):
             devices = range(torch_gcu.device_count())
         devices = [torch.device(d) for d in devices]
         devices = cast(List[torch.device], devices)
+        print(devices)
 
         try:
             self.partitions, self.balance, self.devices = split_module(module, balance, devices)
