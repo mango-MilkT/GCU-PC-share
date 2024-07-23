@@ -14,7 +14,7 @@ model.apply(init_weights)
 device = torch_gcu.gcu_device()
 model.to(device=device)
 
-model = torchgpipe.GPipe(model, balance=[2, 2], chunks=8)
+# model = torchgpipe.GPipe(model, balance=[2, 2], chunks=8)
 
 batch_size, lr, num_epochs = 256, 0.1, 5
 loss = nn.CrossEntropyLoss()
@@ -23,8 +23,8 @@ trainer = torch.optim.SGD(model.parameters(), lr=lr)
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
 # input("data loaded!")
 
-in_device = model.devices[0]
-out_device = model.devices[-1]
+# in_device = model.devices[0]
+# out_device = model.devices[-1]
 # input("in & out device set!")
 
 animator = d2l.Animator(xlabel='epoch', xlim=[1,num_epochs], ylim=[0.3,0.9], legend=['train loss', 'train acc', 'test acc'])
@@ -38,13 +38,13 @@ for epoch in range(num_epochs):
     metric = d2l.Accumulator(3)
     batch_index = 0
     for X, y in train_iter:
-        # X = X.to(device)
-        # y = y.to(device)
-        X = X.to(in_device, non_blocking=True)
-        y = y.to(out_device, non_blocking=True)
-        input("to device complete!")
+        X = X.to(device)
+        y = y.to(device)
+        # X = X.to(in_device, non_blocking=True)
+        # y = y.to(out_device, non_blocking=True)
+        # input("to device complete!")
         y_hat = model(X)
-        input("forward compute complete!")
+        # input("forward compute complete!")
         l = loss(y_hat, y)
         if isinstance(trainer, torch.optim.Optimizer):
             trainer.zero_grad()
@@ -64,10 +64,10 @@ for epoch in range(num_epochs):
     metric = d2l.Accumulator(2)
     with torch.no_grad():
         for X, y in test_iter:
-            # X = X.to(device)
-            # y = y.to(device)
-            X = X.to(in_device, non_blocking=True)
-            y = y.to(out_device, non_blocking=True)
+            X = X.to(device)
+            y = y.to(device)
+            # X = X.to(in_device, non_blocking=True)
+            # y = y.to(out_device, non_blocking=True)
             y_hat = model(X)
             metric.add(d2l.accuracy(y_hat, y), y.numel())
     test_acc = metric[0] / metric[1]
