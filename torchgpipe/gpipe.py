@@ -360,7 +360,7 @@ class GPipe(Module):
         batches = microbatch.scatter(input, self.chunks)
 
         # Separate CUDA streams for copy.
-        input("# Separate CUDA streams for copy.") # input change
+        breakpoint()
         copy_streams = self._ensure_copy_streams()
 
         # The micro-batch index where the checkpointing stops.
