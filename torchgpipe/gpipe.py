@@ -360,11 +360,11 @@ class GPipe(Module):
         batches = microbatch.scatter(input, self.chunks)
 
         # Separate CUDA streams for copy.
-        breakpoint()
+        breakpoint() # bp change
         copy_streams = self._ensure_copy_streams()
 
         # The micro-batch index where the checkpointing stops.
-        input("# The micro-batch index where the checkpointing stops.") # input change
+        breakpoint() # bp change
         if self.training:
             checkpoint_stop = {
                 'always': self.chunks,
@@ -375,7 +375,7 @@ class GPipe(Module):
             checkpoint_stop = 0
 
         # Run pipeline parallelism.
-        input("# Run pipeline parallelism.") # input change
+        breakpoint() # bp change
         pipeline = Pipeline(batches,
                             self.partitions,
                             self.devices,
@@ -385,6 +385,6 @@ class GPipe(Module):
         pipeline.run()
 
         # Merge the micro-batches into one mini-batch.
-        input("# Merge the micro-batches into one mini-batch.") # input change
+        breakpoint() # bp change
         output = microbatch.gather(batches)
         return output
