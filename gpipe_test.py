@@ -11,7 +11,7 @@ def init_weights(m):
 
 model.apply(init_weights)
 
-model = GPipe(model, balance=[2, 2], chunks=8)
+model = torchgpipe.GPipe(model, balance=[2, 2], chunks=8)
 
 # 1st partition: nn.Sequential(a, b) on cuda:0
 # 2nd partition: nn.Sequential(c, d) on cuda:1
