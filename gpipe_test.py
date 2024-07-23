@@ -36,6 +36,7 @@ for epoch in range(num_epochs):
         model.train()
         # input("train mode on!")
     metric = d2l.Accumulator(3)
+    batch_index = 0
     for X, y in train_iter:
         X = X.to(device)
         y = y.to(device)
@@ -53,9 +54,8 @@ for epoch in range(num_epochs):
             trainer.step()
             # input("optim step complete!")
         metric.add(float(l.sum()), d2l.accuracy(y_hat, y), y.numel())
-        if firstBatchFlag:
-            input("first batch complete!")
-            firstBatchFlag = 0
+        input(f"batch {batch_index} finished!")
+        batch_index += 1
     train_metrics = metric[0] / metric[2], metric[1] / metric[2]
     
     if isinstance(model, nn.Module):
@@ -73,8 +73,7 @@ for epoch in range(num_epochs):
     test_acc = metric[0] / metric[1]
 
     animator.add(epoch+1, train_metrics + (test_acc,))
-    if epoch == 0:
-        input(f"first epoch finished!")
+    input(f"epoch {epoch} finished!")
 
 train_loss, train_acc = train_metrics
 print(train_loss)
