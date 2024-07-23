@@ -17,7 +17,7 @@ model.to(device=device)
 # model = torchgpipe.GPipe(model, balance=[2, 2], chunks=8)
 
 batch_size, lr, num_epochs = 256, 0.1, 5
-loss = nn.CrossEntropyLoss(reduction='none')
+loss = nn.CrossEntropyLoss()
 trainer = torch.optim.SGD(model.parameters(), lr=lr)
 
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
