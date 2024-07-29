@@ -75,8 +75,8 @@ scheduler = CosineAnnealingLR(updater, T_max=num_epochs)
 # 7.指定设备
 device = torch_gcu.gcu_device()
 print('training on', device)
-net.to(device)
-print(net)
+net.to(device=device)
+print(net.parameters())
 
 # *8.精度计算
 def accuracy(y_hat, y):
@@ -106,7 +106,7 @@ for epoch in range(num_epochs):
     timer.start()
     for i, (X, y) in enumerate(train_iter):
         X, y = X.to(device), y.to(device)
-        print(X,y)
+        # print(X,y)
         y_hat = net(X)
         loss = criterion(y_hat, y)
         updater.zero_grad()
