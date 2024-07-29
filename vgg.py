@@ -4,6 +4,7 @@ import torchvision
 from torch.utils import data
 from torchvision import transforms
 import matplotlib.pyplot as plt
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import torch_gcu
 
@@ -66,13 +67,16 @@ net.apply(init_params)
 criterion = nn.CrossEntropyLoss()
 
 # 6.定义优化器
+num_epochs = 10
 lr = 0.05
 updater = torch.optim.SGD(net.parameters(), lr=lr)
+scheduler = CosineAnnealingLR(updater, T_max=num_epochs)
 
 # 7.指定设备
 device = torch_gcu.gcu_device()
 print('training on', device)
 net.to(device)
+print(net)
 
 # *8.精度计算
 def accuracy(y_hat, y):
@@ -90,7 +94,6 @@ def accuracy(y_hat, y):
     return float(compare.type(y.dtype).sum())
 
 # 9.正式迭代训练
-num_epochs = 10
 all_train_loss = []
 all_train_acc = []
 all_test_acc = []
@@ -103,6 +106,7 @@ for epoch in range(num_epochs):
     timer.start()
     for i, (X, y) in enumerate(train_iter):
         X, y = X.to(device), y.to(device)
+        print(X,y)
         y_hat = net(X)
         loss = criterion(y_hat, y)
         updater.zero_grad()
@@ -131,6 +135,8 @@ for epoch in range(num_epochs):
             num_test_examples += y.numel()
         epoch_test_acc /= num_test_examples
         all_test_acc.append(epoch_test_acc)
+    
+    scheduler.step()
 
 print(f'loss {epoch_train_loss:.3f}, train acc {epoch_train_acc:.3f}, '
         f'test acc {epoch_test_acc:.3f}')
