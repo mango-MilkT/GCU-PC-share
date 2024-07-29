@@ -63,20 +63,19 @@ def init_params(m):
 
 net.apply(init_params)
 
-# 5.定义损失函数(交叉熵)
-criterion = nn.CrossEntropyLoss()
-
-# 6.定义优化器
-num_epochs = 10
-lr = 0.05
-updater = torch.optim.SGD(net.parameters(), lr=lr)
-scheduler = CosineAnnealingLR(updater, T_max=num_epochs)
-
-# 7.指定设备
+# 5.指定设备
 device = torch_gcu.gcu_device()
 print('training on', device)
 net.to(device=device)
-print(net.parameters())
+
+# 6.定义损失函数(交叉熵)
+criterion = nn.CrossEntropyLoss()
+
+# 7.定义优化器
+num_epochs = 10
+lr = 0.05
+updater = torch.optim.SGD(net.parameters(), lr=lr) # 要在指定设备之后, 因为这里用到了parameters
+scheduler = CosineAnnealingLR(updater, T_max=num_epochs)
 
 # *8.精度计算
 def accuracy(y_hat, y):
