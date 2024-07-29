@@ -123,6 +123,7 @@ for epoch in range(num_epochs):
     all_num_train_examples += num_train_examples
     timer.stop()
     print(f'epoch {epoch+1}, loss {epoch_train_loss:.3f}, acc {epoch_train_acc:.3f}, time cost {timer.times[-1]:.3f}')
+    input('first epoch')
 
     num_test_examples = 0
     net.eval()
