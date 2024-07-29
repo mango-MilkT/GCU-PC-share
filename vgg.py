@@ -56,17 +56,17 @@ def vgg(conv_arch):
 conv_arch = ((1, 16), (1, 32), (2, 64), (2, 128), (2, 128))
 net = vgg(conv_arch)
 
-# 4.参数初始化
+# 4.指定设备
+device = torch_gcu.gcu_device()
+print('training on', device)
+net.to(device=device)
+
+# 5.参数初始化
 def init_params(m):
     if type(m) == nn.Linear or type(m) == nn.Conv2d:
         nn.init.xavier_uniform_(m.weight)
 
 net.apply(init_params)
-
-# 5.指定设备
-device = torch_gcu.gcu_device()
-print('training on', device)
-net.to(device=device)
 
 # 6.定义损失函数(交叉熵)
 criterion = nn.CrossEntropyLoss()
@@ -123,7 +123,7 @@ for epoch in range(num_epochs):
     all_num_train_examples += num_train_examples
     timer.stop()
     print(f'epoch {epoch+1}, loss {epoch_train_loss:.3f}, acc {epoch_train_acc:.3f}, time cost {timer.times[-1]:.3f}')
-    input('first epoch')
+    # input('first epoch')
 
     num_test_examples = 0
     net.eval()
