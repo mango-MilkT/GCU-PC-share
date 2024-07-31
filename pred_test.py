@@ -103,7 +103,8 @@ def get_fashion_mnist_labels(labels):
     """返回Fashion-MNIST数据集的文本标签"""
     text_labels = ['t-shirt', 'trouser', 'pullover', 'dress', 'coat',
                    'sandal', 'shirt', 'sneaker', 'bag', 'ankle boot']
-    return [text_labels[int(i)] for i in labels]
+    with torch.no_grad():
+        return [text_labels[int(i)] for i in labels]
 
 def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):  #@save
     """绘制图像列表"""
@@ -133,15 +134,16 @@ with torch.no_grad():
     X, y = next(iter(test_iter))
     X, y = X.to(device), y.to(device)
     y_hat = net(X)
-    # trues = get_fashion_mnist_labels(y)
-    # preds = get_fashion_mnist_labels(y_hat.argmax(axis=1))
-    # titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
+    trues = get_fashion_mnist_labels(y.cpu())
+    preds = get_fashion_mnist_labels(y_hat.cpu().argmax(axis=1))
+    titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
 timer.stop()
 test_info = f'test time cost {timer.times[-1]:.3f}'
 print(test_info)
 input("pred finished!")
-# show_images(
-#         X[0:n].reshape((n, resize, resize)).cpu(), 1, n, titles=titles[0:n])
+X = X.cpu()
+show_images(
+        X[0:n].reshape((n, resize, resize)), 1, n, titles=titles[0:n])
 
 timer.stop()
 test_info = f'test time cost {timer.times[-1]:.3f}'
