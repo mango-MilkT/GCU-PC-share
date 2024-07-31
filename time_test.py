@@ -50,7 +50,7 @@ def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):  #@save
         ax.axes.get_yaxis().set_visible(False)
         if titles:
             ax.set_title(titles[i])
-    plt.savefig(f"./img/test_result_{time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())}.jpg")
+    plt.savefig(f"./img/test_result_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.jpg")
     plt.show()
     return axes
 
