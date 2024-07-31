@@ -11,7 +11,6 @@ import logging
 import torch_gcu
 
 from utils.Timer import Timer
-
 # 0.日志
 filename = f"./logger/{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.txt"
 logger = logging.getLogger('VGG')
@@ -76,26 +75,11 @@ net = vgg(conv_arch)
 
 # 4.指定设备
 device = torch_gcu.gcu_device()
+# device = torch.device('cuda')
 device_info = f'training on {device}'
 print(device_info)
 logger.info(device_info)
 net.to(device=device)
-
-# 5.参数初始化
-def init_params(m):
-    if type(m) == nn.Linear or type(m) == nn.Conv2d:
-        nn.init.xavier_uniform_(m.weight)
-
-net.apply(init_params)
-
-# 6.定义损失函数(交叉熵)
-criterion = nn.CrossEntropyLoss()
-
-# 7.定义优化器
-num_epochs = 10
-lr = 0.05
-updater = torch.optim.SGD(net.parameters(), lr=lr) # 要在指定设备之后, 因为这里用到了parameters
-scheduler = CosineAnnealingLR(updater, T_max=num_epochs)
 
 # *8.精度计算
 def accuracy(y_hat, y):
@@ -112,74 +96,7 @@ def accuracy(y_hat, y):
     compare = y_hat.type(y.dtype) == y
     return float(compare.type(y.dtype).sum())
 
-# 9.正式迭代训练
-all_train_loss = []
-all_train_acc = []
-all_test_acc = []
-all_num_train_examples = 0
 timer = Timer()
-
-for epoch in range(num_epochs):
-    epoch_train_loss, epoch_train_acc, epoch_test_acc = 0., 0., 0.
-    num_train_examples = 0
-    net.train()
-    timer.start()
-    for i, (X, y) in enumerate(train_iter):
-        X, y = X.to(device), y.to(device)
-        # print(X,y)
-        y_hat = net(X)
-        loss = criterion(y_hat, y)
-        updater.zero_grad()
-        loss.backward()
-        torch_gcu.optimizer_step(updater, [loss, y_hat], model=net)
-        with torch.no_grad():
-            epoch_train_loss += float(loss * y.numel())
-            epoch_train_acc += accuracy(y_hat, y)
-            num_train_examples += y.numel()
-    epoch_train_loss /= num_train_examples
-    epoch_train_acc /= num_train_examples
-
-    all_train_loss.append(epoch_train_loss)
-    all_train_acc.append(epoch_train_acc)
-    all_num_train_examples += num_train_examples
-    timer.stop()
-    epoch_info = f'epoch {epoch+1}, loss {epoch_train_loss:.3f}, acc {epoch_train_acc:.3f}, time cost {timer.times[-1]:.3f}'
-    print(epoch_info)
-    logger.info(epoch_info)
-    # input('first epoch')
-
-    num_test_examples = 0
-    net.eval()
-    with torch.no_grad():
-        for X, y in test_iter:
-            X, y = X.to(device), y.to(device)
-            y_hat = net(X)
-            epoch_test_acc += accuracy(y_hat, y)
-            num_test_examples += y.numel()
-        epoch_test_acc /= num_test_examples
-        all_test_acc.append(epoch_test_acc)
-    
-    scheduler.step()
-
-final_info = f'loss {epoch_train_loss:.3f}, train acc {epoch_train_acc:.3f}, test acc {epoch_test_acc:.3f}'
-print(final_info)
-logger.info(final_info)
-final_info = f'{num_train_examples / timer.sum():.1f} examples/sec on {str(device)}, total time cost {timer.sum():.3f}'
-print(final_info)
-logger.info(final_info)
-input('all training finished!')
-
-plt.plot(range(1, num_epochs+1), all_train_loss, label='train loss')
-plt.plot(range(1, num_epochs+1), all_train_acc, linestyle='--', label='train acc')
-plt.plot(range(1, num_epochs+1), all_test_acc, linestyle='--', label='test acc')
-plt.title('')
-plt.xlabel('epoch')
-plt.xlim([1, num_epochs])
-plt.legend()
-plt.savefig(f"./img/train_process_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.jpg")
-plt.show()
-
-
 
 # *.可视化
 def get_fashion_mnist_labels(labels):
@@ -204,6 +121,7 @@ def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):  #@save
         ax.axes.get_yaxis().set_visible(False)
         if titles:
             ax.set_title(titles[i])
+    plt.tight_layout()
     plt.savefig(f"./img/test_result_{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.jpg")
     plt.show()
     return axes
@@ -216,6 +134,7 @@ X, y = X.to(device), y.to(device)
 trues = get_fashion_mnist_labels(y)
 preds = get_fashion_mnist_labels(net(X).argmax(axis=1))
 titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
+input("pred finished!")
 show_images(
         X[0:n].reshape((n, resize, resize)).cpu(), 1, n, titles=titles[0:n])
 
