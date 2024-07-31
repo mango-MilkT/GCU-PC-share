@@ -5,6 +5,7 @@ from torch.utils import data
 from torchvision import transforms
 import matplotlib.pyplot as plt
 from torch.optim.lr_scheduler import CosineAnnealingLR
+import time
 
 import torch_gcu
 
@@ -142,6 +143,7 @@ print(f'loss {epoch_train_loss:.3f}, train acc {epoch_train_acc:.3f}, '
         f'test acc {epoch_test_acc:.3f}')
 print(f'{num_train_examples / timer.sum():.1f} examples/sec '
         f'on {str(device)}')
+input('all training finished!')
 
 plt.plot(range(1, num_epochs+1), all_train_loss, label='train loss')
 plt.plot(range(1, num_epochs+1), all_train_acc, linestyle='--', label='train acc')
@@ -150,6 +152,7 @@ plt.title('')
 plt.xlabel('epoch')
 plt.xlim([1, num_epochs])
 plt.legend()
+plt.savefig(f"./img/train_process_{time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())}.jpg")
 plt.show()
 
 
@@ -177,6 +180,7 @@ def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):  #@save
         ax.axes.get_yaxis().set_visible(False)
         if titles:
             ax.set_title(titles[i])
+    plt.savefig(f"./img/test_result_{time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())}.jpg")
     plt.show()
     return axes
 
