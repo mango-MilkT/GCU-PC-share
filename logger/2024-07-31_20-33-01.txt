@@ -1,0 +1,2 @@
+2024-07-31 20:33:01,734 - VGG - INFO - training on cuda
+2024-07-31 20:33:17,240 - VGG - INFO - test time cost 15.253

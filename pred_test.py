@@ -75,7 +75,7 @@ net = vgg(conv_arch)
 
 # 4.指定设备
 device = torch_gcu.gcu_device()
-# device = torch.device('cuda')
+# device = torch.device('cpu')
 device_info = f'training on {device}'
 print(device_info)
 logger.info(device_info)
@@ -127,13 +127,16 @@ def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):  #@save
     return axes
 
 timer.start()
-
+net.eval()
 n = 6
 X, y = next(iter(test_iter))
 X, y = X.to(device), y.to(device)
 trues = get_fashion_mnist_labels(y)
 preds = get_fashion_mnist_labels(net(X).argmax(axis=1))
 titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
+timer.stop()
+test_info = f'test time cost {timer.times[-1]:.3f}'
+print(test_info)
 input("pred finished!")
 show_images(
         X[0:n].reshape((n, resize, resize)).cpu(), 1, n, titles=titles[0:n])

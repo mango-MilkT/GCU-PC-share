@@ -1,0 +1,2 @@
+2024-07-31 20:33:40,269 - VGG - INFO - training on cpu
+2024-07-31 20:33:47,802 - VGG - INFO - test time cost 7.532
