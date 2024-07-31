@@ -1,0 +1,5 @@
+2024-07-31 11:12:03,357 - VGG - INFO - training on xla:0
+2024-07-31 11:18:51,736 - VGG - INFO - epoch 1, loss 0.780, acc 0.711, time cost 403.597
+2024-07-31 11:20:42,467 - VGG - INFO - loss 0.780, train acc 0.711, test acc 0.859
+2024-07-31 11:20:42,467 - VGG - INFO - 148.7 examples/sec on xla:0, total time cost 403.59659457206726
+2024-07-31 12:15:07,077 - VGG - INFO - test time cost 3233.179
