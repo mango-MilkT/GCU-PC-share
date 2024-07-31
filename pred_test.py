@@ -140,8 +140,8 @@ timer.stop()
 test_info = f'test time cost {timer.times[-1]:.3f}'
 print(test_info)
 input("pred finished!")
-show_images(
-        X[0:n].reshape((n, resize, resize)).cpu(), 1, n, titles=titles[0:n])
+# show_images(
+#         X[0:n].reshape((n, resize, resize)).cpu(), 1, n, titles=titles[0:n])
 
 timer.stop()
 test_info = f'test time cost {timer.times[-1]:.3f}'
