@@ -6,10 +6,27 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 from torch.optim.lr_scheduler import CosineAnnealingLR
 import time
+import logging
 
 import torch_gcu
 
 from utils.Timer import Timer
+
+# 0.日志
+filename = f"./logger/{time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())}.txt"
+logger = logging.getLogger('VGG')
+logger.setLevel(logging.INFO)
+
+# 创建文件处理器，并设置级别为INFO
+file_handler = logging.FileHandler(filename)
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+# 添加文件处理器到logger
+logger.addHandler(file_handler)
+
 
 # 1.预处理操作
 trans = []
@@ -59,7 +76,9 @@ net = vgg(conv_arch)
 
 # 4.指定设备
 device = torch_gcu.gcu_device()
-print('training on', device)
+device_info = f'training on {device}'
+print(device_info)
+logger.info(device_info)
 net.to(device=device)
 
 # 5.参数初始化
@@ -73,7 +92,7 @@ net.apply(init_params)
 criterion = nn.CrossEntropyLoss()
 
 # 7.定义优化器
-num_epochs = 10
+num_epochs = 1
 lr = 0.05
 updater = torch.optim.SGD(net.parameters(), lr=lr) # 要在指定设备之后, 因为这里用到了parameters
 scheduler = CosineAnnealingLR(updater, T_max=num_epochs)
@@ -99,6 +118,7 @@ all_train_acc = []
 all_test_acc = []
 all_num_train_examples = 0
 timer = Timer()
+
 for epoch in range(num_epochs):
     epoch_train_loss, epoch_train_acc, epoch_test_acc = 0., 0., 0.
     num_train_examples = 0
@@ -123,7 +143,9 @@ for epoch in range(num_epochs):
     all_train_acc.append(epoch_train_acc)
     all_num_train_examples += num_train_examples
     timer.stop()
-    print(f'epoch {epoch+1}, loss {epoch_train_loss:.3f}, acc {epoch_train_acc:.3f}, time cost {timer.times[-1]:.3f}')
+    epoch_info = f'epoch {epoch+1}, loss {epoch_train_loss:.3f}, acc {epoch_train_acc:.3f}, time cost {timer.times[-1]:.3f}'
+    print(epoch_info)
+    logger.info(epoch_info)
     # input('first epoch')
 
     num_test_examples = 0
@@ -139,10 +161,12 @@ for epoch in range(num_epochs):
     
     scheduler.step()
 
-print(f'loss {epoch_train_loss:.3f}, train acc {epoch_train_acc:.3f}, '
-        f'test acc {epoch_test_acc:.3f}')
-print(f'{num_train_examples / timer.sum():.1f} examples/sec '
-        f'on {str(device)}')
+final_info = f'loss {epoch_train_loss:.3f}, train acc {epoch_train_acc:.3f}, test acc {epoch_test_acc:.3f}'
+print(final_info)
+logger.info(final_info)
+final_info = f'{num_train_examples / timer.sum():.1f} examples/sec on {str(device)}, total time cost {timer.sum()}'
+print(final_info)
+logger.info(final_info)
 input('all training finished!')
 
 plt.plot(range(1, num_epochs+1), all_train_loss, label='train loss')
@@ -184,6 +208,8 @@ def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):  #@save
     plt.show()
     return axes
 
+timer.start()
+
 n = 6
 X, y = next(iter(test_iter))
 X, y = X.to(device), y.to(device)
@@ -192,3 +218,9 @@ preds = get_fashion_mnist_labels(net(X).argmax(axis=1))
 titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
 show_images(
         X[0:n].reshape((n, resize, resize)).cpu(), 1, n, titles=titles[0:n])
+
+timer.stop()
+test_info = f'test time cost {timer.times[-1]:.3f}'
+print(test_info)
+logger.info(test_info)
+
