@@ -132,8 +132,9 @@ timer.start()
 with torch.no_grad():
     X, y = next(iter(test_iter))
     X, y = X.to(device), y.to(device)
+    y_hat = net(X)
     trues = get_fashion_mnist_labels(y)
-    preds = get_fashion_mnist_labels(net(X).argmax(axis=1))
+    preds = get_fashion_mnist_labels(y_hat.argmax(axis=1))
     titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
 timer.stop()
 test_info = f'test time cost {timer.times[-1]:.3f}'
