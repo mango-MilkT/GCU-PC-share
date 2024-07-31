@@ -126,14 +126,15 @@ def show_images(imgs, num_rows, num_cols, titles=None, scale=1.5):  #@save
     plt.show()
     return axes
 
-timer.start()
-net.eval()
 n = 6
-X, y = next(iter(test_iter))
-X, y = X.to(device), y.to(device)
-trues = get_fashion_mnist_labels(y)
-preds = get_fashion_mnist_labels(net(X).argmax(axis=1))
-titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
+net.eval()
+timer.start()
+with torch.no_grad():
+    X, y = next(iter(test_iter))
+    X, y = X.to(device), y.to(device)
+    trues = get_fashion_mnist_labels(y)
+    preds = get_fashion_mnist_labels(net(X).argmax(axis=1))
+    titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
 timer.stop()
 test_info = f'test time cost {timer.times[-1]:.3f}'
 print(test_info)
